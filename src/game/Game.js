@@ -817,6 +817,35 @@ class Game {
     });
   }
 
+  /** เฉพาะ host ใช้จบเกมกลางคัน (ยกเลิกโดยเจ้าของห้อง) */
+  async forceEndByHost() {
+    if (this.phase === 'ended') return;
+    this.phase = 'ended';
+    clearTimeout(this.timer);
+    this.hunterPending = false;
+    if (this.hunterResolve) {
+      this.hunterResolve();
+      this.hunterResolve = null;
+    }
+
+    const roleReveal = [...this.players.values()]
+      .map(
+        (p) =>
+          `${p.alive ? '✅' : '💀'} **${p.displayName}** — ${p.role?.emoji ?? '?'} ${p.role?.name ?? '?'}`
+      )
+      .join('\n');
+
+    await this.channel.send({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(COLOR.INFO)
+          .setTitle('🛑 เกมถูกจบโดยเจ้าของห้อง')
+          .setDescription(`**${this.host.globalName || this.host.username}** สั่งจบเกม\n\n**📋 เฉลยบทบาททั้งหมด:**\n${roleReveal}`)
+          .setFooter({ text: 'ใช้ /werewolf เพื่อเริ่มเกมใหม่' }),
+      ],
+    });
+  }
+
   // ─── Helpers ────────────────────────────────────────────
 
   getLivingPlayers() {
@@ -879,7 +908,12 @@ class Game {
         .setCustomId(`ww:start:${this.id}`)
         .setLabel('เริ่มเกม')
         .setStyle(ButtonStyle.Primary)
-        .setEmoji('🎮')
+        .setEmoji('🎮'),
+      new ButtonBuilder()
+        .setCustomId(`ww:cancel:${this.id}`)
+        .setLabel('จบเกม')
+        .setStyle(ButtonStyle.Danger)
+        .setEmoji('🛑')
     );
   }
 }

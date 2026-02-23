@@ -18,12 +18,34 @@ async function handleSlashCommand(interaction) {
   if (interaction.commandName !== 'werewolf') return;
 
   const channelId = interaction.channelId;
+  const subcommand = interaction.options?.getSubcommand(false);
 
+  // /werewolf end — เจ้าของห้องจบเกม
+  if (subcommand === 'end') {
+    const game = games.get(channelId);
+    if (!game || game.phase === 'ended') {
+      return interaction.reply({
+        content: '❌ ไม่มีเกมกำลังดำเนินอยู่ในช่องนี้',
+        ephemeral: true,
+      });
+    }
+    if (interaction.user.id !== game.host.id) {
+      return interaction.reply({
+        content: '❌ เฉพาะเจ้าของห้องเท่านั้นที่สามารถจบเกมได้',
+        ephemeral: true,
+      });
+    }
+    await interaction.reply({ content: '🛑 กำลังจบเกม...', ephemeral: true });
+    await game.forceEndByHost();
+    return;
+  }
+
+  // /werewolf หรือ /werewolf start — สร้างห้องเกม
   if (games.has(channelId)) {
     const existing = games.get(channelId);
     if (existing.phase !== 'ended') {
       return interaction.reply({
-        content: '❌ มีเกมกำลังดำเนินอยู่ในช่องนี้แล้ว',
+        content: '❌ มีเกมกำลังดำเนินอยู่ในช่องนี้แล้ว (ใช้ /werewolf end เพื่อจบเกม)',
         ephemeral: true,
       });
     }
@@ -106,6 +128,27 @@ async function handleButton(interaction) {
       if (!result.success) {
         await interaction.followUp({ content: `❌ ${result.msg}`, ephemeral: true });
       }
+      break;
+    }
+
+    case 'cancel': {
+      if (interaction.user.id !== game.host.id) {
+        return interaction.reply({
+          content: '❌ เฉพาะเจ้าของห้องเท่านั้นที่สามารถจบเกมได้',
+          ephemeral: true,
+        });
+      }
+      if (game.phase === 'lobby') {
+        games.delete(channelId);
+        return interaction.update({
+          embeds: [
+            { title: '🐺 เกมหมาป่า', description: '🛑 เกมถูกยกเลิกโดยเจ้าของห้อง', color: 0x95a5a6 },
+          ],
+          components: [],
+        });
+      }
+      await interaction.deferUpdate();
+      await game.forceEndByHost();
       break;
     }
   }

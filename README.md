@@ -56,11 +56,9 @@ cp .env.example .env
 
 ```env
 DISCORD_TOKEN=your_bot_token_here
-CLIENT_ID=your_client_id_here
 ```
 
-- `DISCORD_TOKEN` — Bot Token จากขั้นตอนที่ 1
-- `CLIENT_ID` — Application ID (อยู่ในหน้า General Information)
+- `DISCORD_TOKEN` — Bot Token จากขั้นตอนที่ 1 (คัดลอกจากหน้า Bot ใน Developer Portal)
 
 ### 4. ลงทะเบียน Slash Commands
 
@@ -76,10 +74,11 @@ npm start
 
 ## วิธีเล่น
 
-1. พิมพ์ `/werewolf` ในช่อง Discord เพื่อสร้างห้องเกม
+1. พิมพ์ `/werewolf start` ในช่อง Discord เพื่อสร้างห้องเกม
 2. ผู้เล่นอื่นกดปุ่ม **"เข้าร่วม"** เพื่อเข้าร่วมเกม
 3. เจ้าของห้องกด **"เริ่มเกม"** เมื่อพร้อม (ต้องมีอย่างน้อย 4 คน)
 4. ทุกคนจะได้รับบทบาทผ่าน DM
+5. **จบเกม**: เจ้าของห้องกดปุ่ม **"จบเกม"** ในห้องล็อบบี้ หรือใช้ `/werewolf end` ตอนเล่นอยู่ก็ได้
 
 ### กลางคืน 🌙
 - **หมาป่า**: เลือกคนที่จะกัดใน DM
