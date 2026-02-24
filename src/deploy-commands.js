@@ -5,11 +5,12 @@ const commands = [
   new SlashCommandBuilder()
     .setName('werewolf')
     .setDescription('เกมหมาป่า (Werewolf)')
-    .addSubcommand((sc) =>
-      sc.setName('start').setDescription('สร้างห้องเกม')
-    )
-    .addSubcommand((sc) =>
-      sc.setName('end').setDescription('จบเกม (เฉพาะเจ้าของห้อง)')
+    .addStringOption((opt) =>
+      opt
+        .setName('action')
+        .setDescription('สร้างห้อง (ว่าง) หรือ จบเกม')
+        .setRequired(false)
+        .addChoices({ name: 'จบเกม', value: 'end' })
     )
     .toJSON(),
 ];

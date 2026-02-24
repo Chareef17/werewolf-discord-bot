@@ -18,10 +18,10 @@ async function handleSlashCommand(interaction) {
   if (interaction.commandName !== 'werewolf') return;
 
   const channelId = interaction.channelId;
-  const subcommand = interaction.options?.getSubcommand(false);
+  const action = interaction.options?.getString('action');
 
   // /werewolf end — เจ้าของห้องจบเกม
-  if (subcommand === 'end') {
+  if (action === 'end') {
     const game = games.get(channelId);
     if (!game || game.phase === 'ended') {
       return interaction.reply({
